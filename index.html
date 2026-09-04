@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>植物收藏 · 采集笔记</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Libre+Caslon+Text:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F3EFE3;
+    --card: #ECE5D2;
+    --ink: #26301E;
+    --ink-soft: #4B5540;
+    --sage: #8A9573;
+    --sage-deep: #5C6B49;
+    --rust: #A6572E;
+    --tan-line: #C9BFA0;
+    --gold: #B7912E;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Libre Caslon Text', Georgia, serif;
+    background-image: radial-gradient(rgba(0,0,0,0.015) 1px, transparent 1px);
+    background-size: 3px 3px;
+  }
+
+  ::selection { background: var(--gold); color: var(--paper); }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px 80px; }
+
+  /* ---------- Header ---------- */
+  header { padding: 72px 0 40px; border-bottom: 1px solid var(--tan-line); margin-bottom: 36px; position: relative; }
+
+  .eyebrow-mark { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; color: var(--sage-deep); }
+  .eyebrow-mark svg { width: 22px; height: 22px; flex-shrink: 0; }
+  .eyebrow-mark span { font-family: 'Fraunces', serif; font-style: italic; font-size: 15px; letter-spacing: 0.02em; }
+
+  h1 {
+    font-family: 'Fraunces', serif; font-weight: 500;
+    font-size: clamp(36px, 6vw, 58px); line-height: 1.05;
+    margin: 0 0 18px; max-width: 16ch;
+  }
+
+  header p.lede { font-size: 18px; line-height: 1.7; color: var(--ink-soft); max-width: 56ch; margin: 0 0 28px; }
+
+  .count-note {
+    position: absolute; right: 0; bottom: 0; text-align: right;
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 14px; color: var(--sage-deep);
+  }
+
+  .add-btn {
+    font-family: 'Fraunces', serif; font-size: 15px;
+    background: var(--ink); color: var(--paper);
+    border: none; padding: 11px 22px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: background 0.18s ease;
+  }
+  .add-btn:hover { background: var(--sage-deep); }
+  .add-btn svg { width: 16px; height: 16px; }
+
+  .toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .ghost-btn {
+    font-family: 'Libre Caslon Text', serif; font-style: italic; font-size: 13.5px;
+    background: none; border: 1px solid var(--tan-line); color: var(--ink-soft);
+    padding: 9px 16px; cursor: pointer; transition: border-color 0.18s ease, color 0.18s ease;
+  }
+  .ghost-btn:hover { border-color: var(--sage-deep); color: var(--ink); }
+
+  /* ---------- Form panel ---------- */
+  .form-panel {
+    background: var(--card); border: 1px solid var(--tan-line);
+    padding: 28px; margin-bottom: 40px; display: none;
+  }
+  .form-panel.open { display: block; }
+
+  .form-title { font-family: 'Fraunces', serif; font-size: 22px; margin: 0 0 20px; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; margin-bottom: 16px; }
+  .form-grid.full { grid-template-columns: 1fr; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-family: 'Fraunces', serif; font-style: italic; font-size: 13.5px; color: var(--sage-deep); }
+  .field input[type=text], .field textarea, .field input[type=file] {
+    font-family: 'Libre Caslon Text', serif; font-size: 15px; color: var(--ink);
+    background: var(--paper); border: 1px solid var(--tan-line); padding: 9px 11px;
+    resize: vertical;
+  }
+  .field textarea { min-height: 84px; line-height: 1.6; }
+  .field input:focus, .field textarea:focus { outline: 2px solid var(--sage-deep); outline-offset: 1px; }
+
+  .desc-row { display: flex; gap: 8px; align-items: flex-start; }
+  .desc-row textarea { flex: 1; }
+  .ai-btn {
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 13px;
+    background: var(--sage); color: var(--paper); border: none;
+    padding: 9px 14px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    transition: background 0.18s ease;
+  }
+  .ai-btn:hover { background: var(--sage-deep); }
+  .ai-btn:disabled { opacity: 0.5; cursor: wait; }
+  .ai-note { font-size: 12.5px; color: var(--ink-soft); margin-top: 8px; line-height: 1.5; }
+
+  .form-actions { display: flex; gap: 10px; margin-top: 22px; }
+  .submit-btn {
+    font-family: 'Fraunces', serif; font-size: 15px; background: var(--rust); color: var(--paper);
+    border: none; padding: 11px 24px; cursor: pointer; transition: background 0.18s ease;
+  }
+  .submit-btn:hover { background: #8A4623; }
+  .cancel-btn {
+    font-family: 'Libre Caslon Text', serif; font-style: italic; font-size: 14px;
+    background: none; border: 1px solid var(--tan-line); color: var(--ink-soft);
+    padding: 11px 20px; cursor: pointer;
+  }
+
+  /* ---------- Filter chips ---------- */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+  .filter-chip {
+    font-family: 'Libre Caslon Text', serif; font-style: italic; font-size: 14.5px;
+    padding: 7px 16px; border: 1px solid var(--tan-line); border-radius: 2px;
+    background: transparent; color: var(--ink-soft); cursor: pointer;
+    transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+  }
+  .filter-chip:hover { border-color: var(--sage-deep); color: var(--ink); }
+  .filter-chip.active { background: var(--rust); border-color: var(--rust); color: var(--paper); }
+
+  /* ---------- Grid ---------- */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 30px; }
+
+  .sheet {
+    background: var(--card); border: 1px solid var(--tan-line); position: relative;
+    padding: 18px 18px 22px; transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 0 rgba(38,48,30,0.04);
+  }
+  .sheet:hover { transform: translateY(-3px); box-shadow: 0 14px 24px -14px rgba(38,48,30,0.35); }
+  .sheet.hidden { display: none; }
+
+  .tape {
+    position: absolute; top: -10px; left: 24px; width: 54px; height: 20px;
+    background: rgba(183,145,46,0.28); border: 1px solid rgba(183,145,46,0.4); transform: rotate(-3deg);
+  }
+
+  .accession { position: absolute; top: 14px; right: 16px; font-family: 'Fraunces', serif; font-style: italic; font-size: 12.5px; color: var(--rust); }
+  .delete-btn {
+    position: absolute; top: 13px; right: 16px; background: none; border: none; cursor: pointer;
+    color: var(--rust); opacity: 0; transition: opacity 0.15s ease; padding: 2px;
+  }
+  .sheet:hover .delete-btn { opacity: 0.7; }
+  .delete-btn:hover { opacity: 1 !important; }
+  .delete-btn svg { width: 15px; height: 15px; }
+
+  .photo-frame {
+    width: 100%; aspect-ratio: 4 / 3; background: linear-gradient(155deg, #DAD5C2, #C9C2A8);
+    border: 1px solid var(--tan-line); margin-bottom: 16px; display: flex; align-items: center;
+    justify-content: center; overflow: hidden; position: relative;
+  }
+  .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photo-frame .placeholder-icon { width: 46%; color: rgba(38,48,30,0.28); }
+
+  .plant-name { font-family: 'Fraunces', serif; font-weight: 500; font-size: 22px; margin: 0 0 2px; padding-right: 24px; }
+  .sci-name { font-family: 'Fraunces', serif; font-style: italic; font-size: 14px; color: var(--sage-deep); margin: 0 0 14px; }
+
+  .location-tag {
+    display: inline-block; font-size: 12.5px; padding: 3px 10px;
+    background: rgba(92,107,73,0.14); color: var(--sage-deep); border-radius: 2px;
+    margin-bottom: 14px; font-style: italic; font-family: 'Fraunces', serif;
+  }
+
+  .desc { font-size: 15px; line-height: 1.68; color: var(--ink); margin: 0; white-space: pre-wrap; }
+
+  /* ---------- Empty state ---------- */
+  .empty-state {
+    grid-column: 1 / -1; text-align: center; padding: 80px 20px;
+    border: 1px dashed var(--tan-line); color: var(--ink-soft);
+  }
+  .empty-state svg { width: 44px; height: 44px; color: var(--sage-deep); margin-bottom: 16px; }
+  .empty-state p { font-family: 'Fraunces', serif; font-style: italic; font-size: 17px; margin: 0; }
+
+  footer {
+    margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--tan-line);
+    font-size: 13.5px; color: var(--ink-soft); font-style: italic; font-family: 'Fraunces', serif;
+  }
+
+  @media (max-width: 640px) {
+    header { padding-top: 48px; }
+    .count-note { position: static; margin-top: 14px; text-align: left; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { .sheet { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+        <path d="M12 21c0-6 4-10 9-11-1 6-4 10-9 11z"/>
+        <path d="M12 21c0-6-4-10-9-11 1 6 4 10 9 11z"/>
+      </svg>
+      <span>采集笔记</span>
+    </div>
+    <h1>植物收藏</h1>
+    <p class="lede">记录遇到过、种过、带回过的植物 —— 家里的窗台，或是路上经过的某个地方。位置不限于家中，世界各地都可以收进来。</p>
+    <div class="toolbar">
+      <button class="add-btn" id="openFormBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5v14M5 12h14"/></svg>
+        添加一株
+      </button>
+      <button class="ghost-btn" id="exportBtn">导出备份</button>
+      <button class="ghost-btn" id="importBtn">导入备份</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none">
+    </div>
+    <div class="count-note" id="countNote"></div>
+  </header>
+
+  <section class="form-panel" id="formPanel">
+    <h2 class="form-title">添加标本</h2>
+    <form id="plantForm">
+      <div class="form-grid">
+        <div class="field">
+          <label for="f-name">名称 *</label>
+          <input type="text" id="f-name" required placeholder="比如：龟背竹">
+        </div>
+        <div class="field">
+          <label for="f-sci">学名（选填）</label>
+          <input type="text" id="f-sci" placeholder="Monstera deliciosa">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="f-location">位置</label>
+          <input type="text" id="f-location" placeholder="国家/城市，或家里的角落都可以">
+        </div>
+        <div class="field">
+          <label for="f-photo">照片</label>
+          <input type="file" id="f-photo" accept="image/*">
+        </div>
+      </div>
+      <div class="form-grid full">
+        <div class="field">
+          <label for="f-imageurl">或者，粘贴图片链接（选填，与上传二选一）</label>
+          <input type="text" id="f-imageurl" placeholder="https://...">
+        </div>
+      </div>
+      <div class="form-grid full">
+        <div class="field">
+          <label for="f-desc">简介</label>
+          <div class="desc-row">
+            <textarea id="f-desc" placeholder="写点什么，或者上传照片后点右边按钮让 AI 帮忙起个草稿"></textarea>
+            <button type="button" class="ai-btn" id="aiBtn">✦ AI 生成简介</button>
+          </div>
+          <p class="ai-note">需要先填写名称（有照片效果更好）。这个功能通过部署在 Netlify 上的一个小接口调用 Gemini —— 本地直接打开这个文件、或者还没在 Netlify 配置好 GEMINI_API_KEY 时，点击会提示失败，属于正常现象，见文件里的部署说明。</p>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="submit-btn">收进收藏</button>
+        <button type="button" class="cancel-btn" id="cancelFormBtn">取消</button>
+      </div>
+    </form>
+  </section>
+
+  <nav class="filters" id="filters"></nav>
+
+  <main class="grid" id="grid"></main>
+
+  <footer>共收录 <span id="footerCount">0</span> 株 · 持续采集中</footer>
+
+</div>
+
+<script>
+  const STORAGE_KEY = 'plant_collection_v1';
+  let plants = [];
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    plants = saved ? JSON.parse(saved) : [];
+  } catch (e) { plants = []; }
+
+  let activeFilter = "全部";
+  let pendingImageData = null; // { dataUrl, mediaType } from file upload
+
+  const grid = document.getElementById('grid');
+  const filtersEl = document.getElementById('filters');
+  const countNote = document.getElementById('countNote');
+  const footerCount = document.getElementById('footerCount');
+  const formPanel = document.getElementById('formPanel');
+  const plantForm = document.getElementById('plantForm');
+
+  const sunIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>`;
+  const leafPlaceholder = `<svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1"><path d="M12 21c0-6 4-10 9-11-1 6-4 10-9 11z"/><path d="M12 21c0-6-4-10-9-11 1 6 4 10 9 11z"/></svg>`;
+  const trashIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-8 0v12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V7"/></svg>`;
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(plants)); }
+    catch (e) { alert('保存到本地失败，可能是照片太多占满了存储空间。可以先导出备份，删掉一些旧的再继续。'); }
+  }
+
+  function uniqueLocations() {
+    const set = new Set(plants.map(p => p.location).filter(Boolean));
+    return ["全部", ...set];
+  }
+
+  function renderFilters() {
+    const locs = uniqueLocations();
+    filtersEl.innerHTML = '';
+    if (plants.length === 0) return;
+    locs.forEach(loc => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-chip' + (loc === activeFilter ? ' active' : '');
+      btn.textContent = loc;
+      btn.addEventListener('click', () => { activeFilter = loc; renderFilters(); renderGrid(); });
+      filtersEl.appendChild(btn);
+    });
+  }
+
+  function renderGrid() {
+    grid.innerHTML = '';
+    countNote.textContent = plants.length ? `No. 001 — ${String(plants.length).padStart(3,'0')}` : '';
+    footerCount.textContent = plants.length;
+
+    const visible = plants.filter(p => activeFilter === "全部" || p.location === activeFilter);
+
+    if (plants.length === 0) {
+      grid.innerHTML = `<div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1"><path d="M12 21c0-6 4-10 9-11-1 6-4 10-9 11z"/><path d="M12 21c0-6-4-10-9-11 1 6 4 10 9 11z"/></svg>
+        <p>还没有收藏任何植物，点上面「添加一株」开始。</p>
+      </div>`;
+      return;
+    }
+
+    visible.forEach((p, idx) => {
+      const card = document.createElement('article');
+      card.className = 'sheet';
+      const num = String(plants.indexOf(p) + 1).padStart(3, '0');
+      card.innerHTML = `
+        <div class="tape"></div>
+        <div class="accession">No. ${num}</div>
+        <button class="delete-btn" data-id="${p.id}" title="删除">${trashIcon}</button>
+        <div class="photo-frame">
+          ${p.image ? `<img src="${p.image}" alt="${p.name}" onerror="this.parentElement.innerHTML=window.__leafPlaceholder">` : leafPlaceholder}
+        </div>
+        <h2 class="plant-name">${escapeHtml(p.name)}</h2>
+        ${p.sci ? `<p class="sci-name">${escapeHtml(p.sci)}</p>` : `<p class="sci-name">&nbsp;</p>`}
+        ${p.location ? `<span class="location-tag">${escapeHtml(p.location)}</span>` : ''}
+        ${p.desc ? `<p class="desc">${escapeHtml(p.desc)}</p>` : ''}
+      `;
+      grid.appendChild(card);
+    });
+
+    grid.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        if (confirm('确定要删除这株吗？')) {
+          plants = plants.filter(p => p.id !== id);
+          save();
+          renderFilters();
+          renderGrid();
+        }
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+  window.__leafPlaceholder = leafPlaceholder;
+
+  // ---------- Form open/close ----------
+  document.getElementById('openFormBtn').addEventListener('click', () => {
+    formPanel.classList.add('open');
+    formPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  document.getElementById('cancelFormBtn').addEventListener('click', () => {
+    formPanel.classList.remove('open');
+    plantForm.reset();
+    pendingImageData = null;
+  });
+
+  document.getElementById('f-photo').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) { pendingImageData = null; return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      pendingImageData = { dataUrl: reader.result, mediaType: file.type };
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ---------- AI description assist ----------
+  document.getElementById('aiBtn').addEventListener('click', async () => {
+    const name = document.getElementById('f-name').value.trim();
+    const sci = document.getElementById('f-sci').value.trim();
+    const location = document.getElementById('f-location').value.trim();
+    if (!name) { alert('先填一下名称吧，AI 需要知道是什么植物。'); return; }
+
+    const aiBtn = document.getElementById('aiBtn');
+    aiBtn.disabled = true;
+    aiBtn.textContent = '生成中…';
+
+    try {
+      const body = { name, sci, location };
+      if (pendingImageData) {
+        body.imageBase64 = pendingImageData.dataUrl.split(',')[1];
+        body.mediaType = pendingImageData.mediaType;
+      }
+
+      const response = await fetch('/.netlify/functions/generate-description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.text) {
+        throw new Error(data.error || '生成失败');
+      }
+      document.getElementById('f-desc').value = data.text;
+    } catch (err) {
+      alert('AI 生成没成功：' + (err.message || '未知错误') + '\n\n常见原因：还没部署到 Netlify，或者 Netlify 后台没配置 GEMINI_API_KEY 环境变量。手动写一段也完全可以。');
+    } finally {
+      aiBtn.disabled = false;
+      aiBtn.textContent = '✦ AI 生成简介';
+    }
+  });
+
+  // ---------- Submit ----------
+  plantForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('f-name').value.trim();
+    const sci = document.getElementById('f-sci').value.trim();
+    const location = document.getElementById('f-location').value.trim();
+    const imageUrl = document.getElementById('f-imageurl').value.trim();
+    const desc = document.getElementById('f-desc').value.trim();
+
+    if (!name) return;
+
+    const image = pendingImageData ? pendingImageData.dataUrl : (imageUrl || '');
+
+    plants.push({
+      id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      name, sci, location, image, desc
+    });
+
+    save();
+    renderFilters();
+    renderGrid();
+
+    plantForm.reset();
+    pendingImageData = null;
+    formPanel.classList.remove('open');
+  });
+
+  // ---------- Export / Import ----------
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(plants, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `植物收藏-备份-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('importBtn').addEventListener('click', () => {
+    document.getElementById('importFile').click();
+  });
+  document.getElementById('importFile').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const imported = JSON.parse(reader.result);
+        if (!Array.isArray(imported)) throw new Error('格式不对');
+        plants = plants.concat(imported);
+        save();
+        renderFilters();
+        renderGrid();
+        alert(`已导入 ${imported.length} 条记录。`);
+      } catch (err) {
+        alert('这个文件看起来不是有效的备份文件。');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  renderFilters();
+  renderGrid();
+</script>
+
+</body>
+</html>
