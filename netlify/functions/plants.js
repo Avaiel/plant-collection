@@ -20,6 +20,7 @@ exports.handler = async (event) => {
         body: JSON.stringify({ plants: data || [] })
       };
     } catch (err) {
+      console.error('plants GET failed:', err);
       return { statusCode: 500, body: JSON.stringify({ error: err.message || '读取失败' }) };
     }
   }
@@ -35,6 +36,7 @@ exports.handler = async (event) => {
         body: JSON.stringify({ ok: true, count: plants.length })
       };
     } catch (err) {
+      console.error('plants POST failed:', err);
       return { statusCode: 500, body: JSON.stringify({ error: err.message || '保存失败' }) };
     }
   }
